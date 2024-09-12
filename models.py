@@ -43,3 +43,13 @@ class IdeaRelationship(db.Model):
     session = db.relationship('IdeaSession', backref=db.backref('idea_relationships', lazy=True))
     idea1 = db.relationship('GeneratedIdea', foreign_keys=[idea1_id])
     idea2 = db.relationship('GeneratedIdea', foreign_keys=[idea2_id])
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('idea_session.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    type = db.Column(db.String(10), nullable=False)  # 'title' or 'idea'
+    feedback = db.Column(db.String(10), nullable=False)  # 'positive' or 'negative'
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    session = db.relationship('IdeaSession', backref=db.backref('feedback', lazy=True))

@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportBtn = document.getElementById('export-btn');
     const titlesOutput = document.getElementById('titles-output');
     const ideasOutput = document.getElementById('ideas-output');
+    const positiveFeedbackList = document.getElementById('positive-feedback');
+    const negativeFeedbackList = document.getElementById('negative-feedback');
 
     let isGenerating = false;
     let feedback = [];
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseGeneration();
         exportBtn.style.display = 'none';
         clearMindMap();
+        updateFeedbackDisplay();
     }
 
     function exportSession() {
@@ -83,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentSessionId = data.session_id;
                 displayContent(data);
                 updateMindMap();
+                updateFeedbackDisplay();
+                
+                // Clear feedback after each generation
+                feedback = [];
             } catch (error) {
                 console.error('Error generating content:', error);
                 titlesOutput.innerHTML = '<p>Error: Unable to generate content</p>';
@@ -132,12 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const likeBtn = document.createElement('button');
         likeBtn.innerHTML = '✓';
         likeBtn.className = 'feedback-btn';
-        likeBtn.onclick = () => addFeedback(item.content, type, true);
+        likeBtn.onclick = (event) => addFeedback(event, item.content, type, true);
         
         const dislikeBtn = document.createElement('button');
         dislikeBtn.innerHTML = '✗';
         dislikeBtn.className = 'feedback-btn';
-        dislikeBtn.onclick = () => addFeedback(item.content, type, false);
+        dislikeBtn.onclick = (event) => addFeedback(event, item.content, type, false);
         
         feedbackDiv.appendChild(likeBtn);
         feedbackDiv.appendChild(dislikeBtn);
@@ -150,11 +157,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return div;
     }
 
-    function addFeedback(content, type, isPositive) {
+    function addFeedback(event, content, type, isPositive) {
         feedback.push({
             content: content,
             type: type,
             feedback: isPositive ? 'positive' : 'negative'
+        });
+        
+        // Add visual feedback
+        const feedbackBtn = event.target;
+        feedbackBtn.classList.add('selected');
+        setTimeout(() => feedbackBtn.classList.remove('selected'), 500);
+        
+        console.log('Feedback added:', feedback[feedback.length - 1]);
+        updateFeedbackDisplay();
+    }
+
+    function updateFeedbackDisplay() {
+        positiveFeedbackList.innerHTML = '';
+        negativeFeedbackList.innerHTML = '';
+
+        feedback.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.type.charAt(0).toUpperCase() + item.type.slice(1)}: ${item.content}`;
+            
+            if (item.feedback === 'positive') {
+                positiveFeedbackList.appendChild(li);
+            } else {
+                negativeFeedbackList.appendChild(li);
+            }
         });
     }
 

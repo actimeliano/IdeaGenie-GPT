@@ -20,7 +20,7 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-from models import User, IdeaSession, GeneratedIdea, IdeaRelationship
+from models import User, IdeaSession, GeneratedIdea, IdeaRelationship, Feedback
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -95,7 +95,22 @@ def generate():
             db.session.add(idea_session)
             db.session.commit()
 
-        generated_content = generate_content(initial_title, initial_idea, feedback, model)
+        # Store feedback
+        for fb in feedback:
+            new_feedback = Feedback(
+                session_id=idea_session.id,
+                content=fb['content'],
+                type=fb['type'],
+                feedback=fb['feedback']
+            )
+            db.session.add(new_feedback)
+        db.session.commit()
+
+        # Get all feedback for the session
+        all_feedback = Feedback.query.filter_by(session_id=idea_session.id).all()
+        feedback_list = [{'content': fb.content, 'type': fb.type, 'feedback': fb.feedback} for fb in all_feedback]
+
+        generated_content = generate_content(initial_title, initial_idea, feedback_list, model)
         classified_content = classify_content(generated_content, model)
 
         for title in classified_content['titles']:
@@ -109,6 +124,7 @@ def generate():
         db.session.commit()
 
         classified_content['session_id'] = idea_session.id
+        classified_content['feedback'] = feedback_list
         return jsonify(classified_content)
     except Exception as e:
         app.logger.error(f'Error in generate route: {str(e)}')
@@ -167,7 +183,7 @@ def export_session(session_id):
     return send_file(BytesIO(output.getvalue().encode()),
                      mimetype='text/csv',
                      as_attachment=True,
-                     attachment_filename=f'idea_session_{session_id}.csv')
+                     download_name=f'idea_session_{session_id}.csv')
 
 @app.route('/my_sessions')
 @login_required

@@ -2,13 +2,16 @@ from openai_chat_completion.chat_request import send_openai_request
 import json
 
 def generate_content(initial_title, initial_idea, feedback, model="gpt-4o-mini-2024-07-18"):
+    feedback_history = format_feedback(feedback)
     prompt = f"""
     Generate 5 new titles and 5 new ideas based on the following input:
     Initial Title: {initial_title}
     Initial Idea: {initial_idea}
     
     Previous feedback:
-    {json.dumps(feedback)}
+    {feedback_history}
+
+    Use the feedback to refine and improve the generated content. Focus on aspects that received positive feedback and avoid those with negative feedback.
 
     Format the output as a JSON string with the following structure:
     {{
@@ -54,3 +57,9 @@ def classify_content(content, model="gpt-4o-mini-2024-07-18"):
 
     response = send_openai_request(prompt, model=model)
     return json.loads(response)
+
+def format_feedback(feedback):
+    formatted_feedback = ""
+    for item in feedback:
+        formatted_feedback += f"- Type: {item['type']}, Content: {item['content']}, Feedback: {item['feedback']}\n"
+    return formatted_feedback

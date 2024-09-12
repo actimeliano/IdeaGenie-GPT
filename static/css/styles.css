@@ -13,7 +13,7 @@ body {
     padding: 20px;
 }
 
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
     color: #333;
 }
@@ -101,6 +101,11 @@ button:hover {
     margin-left: 5px;
 }
 
+.feedback-btn.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
 .normal { border-left: 5px solid #4CAF50; }
 .edgy { border-left: 5px solid #FFC107; }
 .ultra-new { border-left: 5px solid #2196F3; }
@@ -144,4 +149,47 @@ button:hover {
 
 .node text {
     font-size: 10px;
+}
+
+.feedback-display {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-columns {
+    display: flex;
+    justify-content: space-between;
+}
+
+.feedback-column {
+    width: 48%;
+}
+
+.feedback-column h3 {
+    text-align: center;
+    color: #333;
+}
+
+.feedback-column ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.feedback-column li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.feedback-column.positive li {
+    background-color: #d4edda;
+    border-left: 5px solid #28a745;
+}
+
+.feedback-column.negative li {
+    background-color: #f8d7da;
+    border-left: 5px solid #dc3545;
 }
