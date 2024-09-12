@@ -35,10 +35,19 @@ button {
     color: #fff;
     border: none;
     cursor: pointer;
+    margin: 5px;
 }
 
 button:hover {
     background-color: #555;
+}
+
+#export-btn {
+    background-color: #4CAF50;
+}
+
+#export-btn:hover {
+    background-color: #45a049;
 }
 
 .output-section {
@@ -89,3 +98,18 @@ h2 {
 .normal { border-left: 5px solid #4CAF50; }
 .edgy { border-left: 5px solid #FFC107; }
 .ultra-new { border-left: 5px solid #2196F3; }
+
+.user-actions {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.user-actions a {
+    margin-left: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.user-actions a:hover {
+    text-decoration: underline;
+}

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateBtn = document.getElementById('generate-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const newSessionBtn = document.getElementById('new-session-btn');
+    const exportBtn = document.getElementById('export-btn');
     const titlesOutput = document.getElementById('titles-output');
     const ideasOutput = document.getElementById('ideas-output');
 
@@ -14,11 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     generateBtn.addEventListener('click', startGeneration);
     pauseBtn.addEventListener('click', pauseGeneration);
     newSessionBtn.addEventListener('click', startNewSession);
+    exportBtn.addEventListener('click', exportSession);
 
     function startGeneration() {
         isGenerating = true;
         generateBtn.style.display = 'none';
         pauseBtn.style.display = 'inline-block';
+        exportBtn.style.display = 'inline-block';
         generateContent();
     }
 
@@ -36,6 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
         initialTitle.value = '';
         initialIdea.value = '';
         pauseGeneration();
+        exportBtn.style.display = 'none';
+    }
+
+    function exportSession() {
+        if (currentSessionId) {
+            window.location.href = `/export/${currentSessionId}`;
+        } else {
+            alert('No session to export. Please generate some ideas first.');
+        }
     }
 
     async function generateContent() {

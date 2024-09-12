@@ -1,0 +1,71 @@
+ HTTP/1.1" 304 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:11:14] "GET /static/js/app.js HTTP/1.1" 304 -
+Raw content from OpenAI API: ```json
+{
+    "titles": [
+        "Chronicles of Paradox: Blurring the Lines",
+        "Temporal Illusions: Where Reality Meets Fiction",
+        "Time's Fabric: Weaving Realities and Tales",
+        "Fictional Epochs: A Journey Through Time Control",
+        "The Timekeeper's Dilemma: Navigating Reality and Fantasy"
+    ],
+    "ideas": [
+        "A device that allows characters to flash between different timelines, creating unintended consequences in their reality.",
+        "An investigative novel where a journalist uncovers a conspiracy involving time manipulation and its impact on historical events.",
+        "A virtual reality game where players can alter past decisions and see how it affects their present, questioning the nature of their reality.",
+        "A series of short stories that explore how different cultures perceive and manipulate time through myths and legends.",
+        "A documentary-style narrative that blends real interviews with fictional characters who claim to have experienced time travel."
+    ]
+}
+```
+Raw content from OpenAI API: ```json
+{
+    "titles": [
+        {"content": "Chronicles of Paradox: Blurring the Lines", "category": "edgy"},
+        {"content": "Temporal Illusions: Where Reality Meets Fiction", "category": "edgy"},
+        {"content": "Time's Fabric: Weaving Realities and Tales", "category": "normal"},
+        {"content": "Fictional Epochs: A Journey Through Time Control", "category": "ultra new"},
+        {"content": "The Timekeeper's Dilemma: Navigating Reality and Fantasy", "category": "edgy"}
+    ],
+    "ideas": [
+        {"content": "A device that allows characters to flash between different timelines, creating unintended consequences in their reality.", "category": "ultra new"},
+        {"content": "An investigative novel where a journalist uncovers a conspiracy involving time manipulation and its impact on historical events.", "category": "normal"},
+        {"content": "A virtual reality game where players can alter past decisions and see how it affects their present, questioning the nature of their reality.", "category": "ultra new"},
+        {"content": "A series of short stories that explore how different cultures perceive and manipulate time through myths and legends.", "category": "normal"},
+        {"content": "A documentary-style narrative that blends real interviews with fictional characters who claim to have experienced time travel.", "category": "edgy"}
+    ]
+}
+```
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:11:25] "POST /generate HTTP/1.1" 200 -
+/home/runner/IdeaGenie-GPT/main.py:26: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  return User.query.get(int(user_id))
+/home/runner/IdeaGenie-GPT/main.py:124: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  idea_session = IdeaSession.query.get(session_id)
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:11:28] "GET /export/8 HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/IdeaGenie-GPT/main.py", line 131, in export_session
+    writer.writerow(['Type', 'Content', 'Category'])
+TypeError: a bytes-like object is required, not 'str'
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:11:28] "GET /export/8?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:11:28] "GET /export/8?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -

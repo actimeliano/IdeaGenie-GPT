@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+import logging
+logging.basicConfig(level=logging.ERROR)
+
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from utils.ai_generator import generate_content, classify_content
 from urllib.parse import urlparse
 from database import db
 import os
+import csv
+from io import StringIO, BytesIO
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -72,42 +77,69 @@ def logout():
 @app.route('/generate', methods=['POST'])
 @login_required
 def generate():
-    data = request.json
-    initial_title = data.get('initial_title', '')
-    initial_idea = data.get('initial_idea', '')
-    feedback = data.get('feedback', [])
-    session_id = data.get('session_id')
+    try:
+        data = request.json
+        initial_title = data.get('initial_title', '')
+        initial_idea = data.get('initial_idea', '')
+        feedback = data.get('feedback', [])
+        session_id = data.get('session_id')
 
-    if session_id:
-        idea_session = IdeaSession.query.get(session_id)
-        if not idea_session or idea_session.user_id != current_user.id:
-            return jsonify({'error': 'Invalid session ID'}), 400
-    else:
-        idea_session = IdeaSession(user_id=current_user.id, initial_title=initial_title, initial_idea=initial_idea)
-        db.session.add(idea_session)
+        if session_id:
+            idea_session = IdeaSession.query.get(session_id)
+            if not idea_session or idea_session.user_id != current_user.id:
+                return jsonify({'error': 'Invalid session ID'}), 400
+        else:
+            idea_session = IdeaSession(user_id=current_user.id, initial_title=initial_title, initial_idea=initial_idea)
+            db.session.add(idea_session)
+            db.session.commit()
+
+        generated_content = generate_content(initial_title, initial_idea, feedback)
+        classified_content = classify_content(generated_content)
+
+        for title in classified_content['titles']:
+            generated_idea = GeneratedIdea(session_id=idea_session.id, content=title['content'], category=title['category'], type='title')
+            db.session.add(generated_idea)
+        
+        for idea in classified_content['ideas']:
+            generated_idea = GeneratedIdea(session_id=idea_session.id, content=idea['content'], category=idea['category'], type='idea')
+            db.session.add(generated_idea)
+        
         db.session.commit()
 
-    generated_content = generate_content(initial_title, initial_idea, feedback)
-    classified_content = classify_content(generated_content)
-
-    for title in classified_content['titles']:
-        generated_idea = GeneratedIdea(session_id=idea_session.id, content=title['content'], category=title['category'], type='title')
-        db.session.add(generated_idea)
-    
-    for idea in classified_content['ideas']:
-        generated_idea = GeneratedIdea(session_id=idea_session.id, content=idea['content'], category=idea['category'], type='idea')
-        db.session.add(generated_idea)
-    
-    db.session.commit()
-
-    classified_content['session_id'] = idea_session.id
-    return jsonify(classified_content)
+        classified_content['session_id'] = idea_session.id
+        return jsonify(classified_content)
+    except Exception as e:
+        app.logger.error(f'Error in generate route: {str(e)}')
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 @app.route('/my_sessions')
 @login_required
 def my_sessions():
     sessions = IdeaSession.query.filter_by(user_id=current_user.id).order_by(IdeaSession.created_at.desc()).all()
     return render_template('my_sessions.html', sessions=sessions)
+
+@app.route('/export/<int:session_id>')
+@login_required
+def export_session(session_id):
+    idea_session = IdeaSession.query.get(session_id)
+    if not idea_session or idea_session.user_id != current_user.id:
+        flash('Invalid session ID')
+        return redirect(url_for('my_sessions'))
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Type', 'Content', 'Category'])
+
+    for idea in idea_session.generated_ideas:
+        writer.writerow([idea.type, idea.content, idea.category])
+
+    output.seek(0)
+    return send_file(
+        BytesIO(output.getvalue().encode()),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=f'idea_session_{session_id}.csv'
+    )
 
 if __name__ == '__main__':
     with app.app_context():
