@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const initialTitle = document.getElementById('initial-title');
     const initialIdea = document.getElementById('initial-idea');
+    const modelSelect = document.getElementById('model-select');
+    const customModel = document.getElementById('custom-model');
     const generateBtn = document.getElementById('generate-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const newSessionBtn = document.getElementById('new-session-btn');
@@ -62,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         initial_title: initialTitle.value,
                         initial_idea: initialIdea.value,
                         feedback: feedback,
-                        session_id: currentSessionId
+                        session_id: currentSessionId,
+                        model: customModel.value || modelSelect.value
                     }),
                 });
 

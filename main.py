@@ -29,50 +29,7 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        if user is not None:
-            flash('Please use a different username.')
-            return redirect(url_for('register'))
-        user = User.query.filter_by(email=email).first()
-        if user is not None:
-            flash('Please use a different email address.')
-            return redirect(url_for('register'))
-        user = User(username=username, email=email)
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
-    return render_template('register.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if user is None or not user.check_password(request.form['password']):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user, remember=request.form.get('remember_me'))
-        next_page = request.args.get('next')
-        if not next_page or urlparse(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
-    return render_template('login.html')
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
+# ... (keep all other routes unchanged)
 
 @app.route('/generate', methods=['POST'])
 @login_required
@@ -83,6 +40,7 @@ def generate():
         initial_idea = data.get('initial_idea', '')
         feedback = data.get('feedback', [])
         session_id = data.get('session_id')
+        model = data.get('model', 'gpt-4o-mini-2024-07-18')
 
         if session_id:
             idea_session = IdeaSession.query.get(session_id)
@@ -93,8 +51,8 @@ def generate():
             db.session.add(idea_session)
             db.session.commit()
 
-        generated_content = generate_content(initial_title, initial_idea, feedback)
-        classified_content = classify_content(generated_content)
+        generated_content = generate_content(initial_title, initial_idea, feedback, model)
+        classified_content = classify_content(generated_content, model)
 
         for title in classified_content['titles']:
             generated_idea = GeneratedIdea(session_id=idea_session.id, content=title['content'], category=title['category'], type='title')
@@ -112,34 +70,7 @@ def generate():
         app.logger.error(f'Error in generate route: {str(e)}')
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
-@app.route('/my_sessions')
-@login_required
-def my_sessions():
-    sessions = IdeaSession.query.filter_by(user_id=current_user.id).order_by(IdeaSession.created_at.desc()).all()
-    return render_template('my_sessions.html', sessions=sessions)
-
-@app.route('/export/<int:session_id>')
-@login_required
-def export_session(session_id):
-    idea_session = IdeaSession.query.get(session_id)
-    if not idea_session or idea_session.user_id != current_user.id:
-        flash('Invalid session ID')
-        return redirect(url_for('my_sessions'))
-
-    output = StringIO()
-    writer = csv.writer(output)
-    writer.writerow(['Type', 'Content', 'Category'])
-
-    for idea in idea_session.generated_ideas:
-        writer.writerow([idea.type, idea.content, idea.category])
-
-    output.seek(0)
-    return send_file(
-        BytesIO(output.getvalue().encode()),
-        mimetype='text/csv',
-        as_attachment=True,
-        download_name=f'idea_session_{session_id}.csv'
-    )
+# ... (keep all other routes unchanged)
 
 if __name__ == '__main__':
     with app.app_context():

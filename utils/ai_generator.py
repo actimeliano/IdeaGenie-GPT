@@ -1,7 +1,7 @@
 from openai_chat_completion.chat_request import send_openai_request
 import json
 
-def generate_content(initial_title, initial_idea, feedback):
+def generate_content(initial_title, initial_idea, feedback, model="gpt-4o-mini-2024-07-18"):
     prompt = f"""
     Generate 5 new titles and 5 new ideas based on the following input:
     Initial Title: {initial_title}
@@ -17,7 +17,7 @@ def generate_content(initial_title, initial_idea, feedback):
     }}
     """
     
-    response = send_openai_request(prompt)
+    response = send_openai_request(prompt, model=model)
     response_data = json.loads(response)
     
     if "error" in response_data:
@@ -30,7 +30,7 @@ def generate_content(initial_title, initial_idea, feedback):
     
     return response_data
 
-def classify_content(content):
+def classify_content(content, model="gpt-4o-mini-2024-07-18"):
     prompt = f"""
     Classify each title and idea into one of three categories: "normal", "edgy", or "ultra new".
     
@@ -52,5 +52,5 @@ def classify_content(content):
     }}
     """
 
-    response = send_openai_request(prompt)
+    response = send_openai_request(prompt, model=model)
     return json.loads(response)
