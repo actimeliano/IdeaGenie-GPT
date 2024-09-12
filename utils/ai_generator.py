@@ -1,0 +1,56 @@
+from openai_chat_completion.chat_request import send_openai_request
+import json
+
+def generate_content(initial_title, initial_idea, feedback):
+    prompt = f"""
+    Generate 5 new titles and 5 new ideas based on the following input:
+    Initial Title: {initial_title}
+    Initial Idea: {initial_idea}
+    
+    Previous feedback:
+    {json.dumps(feedback)}
+
+    Format the output as a JSON string with the following structure:
+    {{
+        "titles": ["title1", "title2", "title3", "title4", "title5"],
+        "ideas": ["idea1", "idea2", "idea3", "idea4", "idea5"]
+    }}
+    """
+    
+    response = send_openai_request(prompt)
+    response_data = json.loads(response)
+    
+    if "error" in response_data:
+        raise ValueError(f"Error in OpenAI request: {response_data['error']}")
+    
+    if "result" in response_data:
+        # The API returned a non-JSON response, so we'll need to parse it
+        # You may need to implement custom parsing logic here
+        return {"titles": [response_data["result"]], "ideas": [response_data["result"]]}
+    
+    return response_data
+
+def classify_content(content):
+    prompt = f"""
+    Classify each title and idea into one of three categories: "normal", "edgy", or "ultra new".
+    
+    Titles: {json.dumps(content['titles'])}
+    Ideas: {json.dumps(content['ideas'])}
+
+    Format the output as a JSON string with the following structure:
+    {{
+        "titles": [
+            {{"content": "title1", "category": "category1"}},
+            {{"content": "title2", "category": "category2"}},
+            ...
+        ],
+        "ideas": [
+            {{"content": "idea1", "category": "category1"}},
+            {{"content": "idea2", "category": "category2"}},
+            ...
+        ]
+    }}
+    """
+
+    response = send_openai_request(prompt)
+    return json.loads(response)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Idea Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI-Powered Idea Generator</h1>
+        <div class="input-section">
+            <input type="text" id="initial-title" placeholder="Enter initial title">
+            <input type="text" id="initial-idea" placeholder="Enter initial idea">
+            <button id="generate-btn">Generate</button>
+            <button id="pause-btn" style="display: none;">Pause</button>
+        </div>
+        <div class="output-section">
+            <div class="column">
+                <h2>Titles</h2>
+                <div id="titles-output"></div>
+            </div>
+            <div class="column">
+                <h2>Ideas</h2>
+                <div id="ideas-output"></div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
