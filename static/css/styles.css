@@ -7,13 +7,13 @@ body {
 }
 
 .container {
-    width: 80%;
+    width: 90%;
     margin: auto;
     overflow: hidden;
     padding: 20px;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     color: #333;
 }
@@ -23,8 +23,8 @@ h1 {
     margin-bottom: 20px;
 }
 
-input[type="text"] {
-    width: 40%;
+input[type="text"], select {
+    width: 30%;
     padding: 10px;
     margin: 5px;
 }
@@ -53,6 +53,7 @@ button:hover {
 .output-section {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .column {
@@ -63,17 +64,22 @@ button:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    color: #333;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-}
-
 .item {
     margin-bottom: 10px;
     padding: 10px;
     background-color: #f9f9f9;
     border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.item:hover {
+    background-color: #e9e9e9;
+}
+
+.item.selected {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
 }
 
 .item-content {
@@ -112,4 +118,30 @@ h2 {
 
 .user-actions a:hover {
     text-decoration: underline;
+}
+
+.mind-map-section {
+    margin-top: 20px;
+}
+
+#mind-map {
+    width: 100%;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.link {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+
+.node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+.node text {
+    font-size: 10px;
 }

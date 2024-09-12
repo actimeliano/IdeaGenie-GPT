@@ -11,10 +11,10 @@ def remove_code_block_markers(content):
         return '\n'.join(lines[1:-1])
     return content
 
-def send_openai_request(prompt: str) -> str:
+def send_openai_request(prompt: str, model: str = 'gpt-4o-mini-2024-07-18') -> str:
     try:
         completion = openai_client.chat.completions.create(
-            model="gpt-4o-mini-2024-07-18",
+            model=model,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1000
         )

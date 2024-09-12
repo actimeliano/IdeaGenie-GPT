@@ -1,0 +1,24 @@
+INFO:werkzeug:WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.196.132:5000
+INFO:werkzeug:Press CTRL+C to quit
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 550-201-092
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:37] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:38] "GET /static/css/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:38] "GET /static/js/app.js HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:55] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:55] "GET /static/css/styles.css HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:41:55] "GET /static/js/app.js HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:09] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:10] "GET /static/css/styles.css HTTP/1.1" 304 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:15] "POST /login HTTP/1.1" 302 -
+/home/runner/IdeaGenie-GPT/main.py:27: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  return User.query.get(int(user_id))
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:15] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:16] "GET /static/css/styles.css HTTP/1.1" 304 -
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:16] "GET /static/js/app.js HTTP/1.1" 304 -
+ERROR:main:Error in generate route: send_openai_request() got an unexpected keyword argument 'model'
+INFO:werkzeug:172.31.196.132 - - [12/Sep/2024 09:45:29] "POST /generate HTTP/1.1" 500 -

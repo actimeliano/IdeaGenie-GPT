@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initialIdea.value = '';
         pauseGeneration();
         exportBtn.style.display = 'none';
+        clearMindMap();
     }
 
     function exportSession() {
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 currentSessionId = data.session_id;
                 displayContent(data);
+                updateMindMap();
             } catch (error) {
                 console.error('Error generating content:', error);
                 titlesOutput.innerHTML = '<p>Error: Unable to generate content</p>';
@@ -118,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createItemElement(item, type) {
         const div = document.createElement('div');
         div.className = `item ${item.category}`;
+        div.dataset.id = item.id;
         
         const contentSpan = document.createElement('span');
         contentSpan.className = 'item-content';
@@ -142,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         div.appendChild(contentSpan);
         div.appendChild(feedbackDiv);
         
+        div.addEventListener('click', () => selectIdea(item.id));
+        
         return div;
     }
 
@@ -152,4 +157,161 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback: isPositive ? 'positive' : 'negative'
         });
     }
+
+    let selectedIdeas = [];
+
+    function selectIdea(id) {
+        if (selectedIdeas.includes(id)) {
+            selectedIdeas = selectedIdeas.filter(ideaId => ideaId !== id);
+        } else {
+            selectedIdeas.push(id);
+        }
+
+        if (selectedIdeas.length === 2) {
+            addRelationship(selectedIdeas[0], selectedIdeas[1]);
+            selectedIdeas = [];
+        }
+
+        updateSelectedIdeasVisual();
+    }
+
+    function updateSelectedIdeasVisual() {
+        document.querySelectorAll('.item').forEach(item => {
+            if (selectedIdeas.includes(parseInt(item.dataset.id))) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+
+    async function addRelationship(idea1Id, idea2Id) {
+        try {
+            const response = await fetch('/add_relationship', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    idea1_id: idea1Id,
+                    idea2_id: idea2Id,
+                    session_id: currentSessionId
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            updateMindMap();
+        } catch (error) {
+            console.error('Error adding relationship:', error);
+        }
+    }
+
+    // Mind Map Visualization
+    let svg, simulation, link, node;
+
+    function initMindMap() {
+        const width = 600;
+        const height = 400;
+
+        svg = d3.select("#mind-map")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+    }
+
+    async function updateMindMap() {
+        if (!currentSessionId) return;
+
+        try {
+            const response = await fetch(`/mind_map/${currentSessionId}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            renderMindMap(data);
+        } catch (error) {
+            console.error('Error updating mind map:', error);
+        }
+    }
+
+    function renderMindMap(data) {
+        if (!svg) initMindMap();
+
+        link = svg.selectAll(".link")
+            .data(data.links)
+            .join("line")
+            .attr("class", "link");
+
+        node = svg.selectAll(".node")
+            .data(data.nodes)
+            .join("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("circle")
+            .attr("r", 5)
+            .attr("fill", d => d.type === 'title' ? 'red' : 'blue');
+
+        node.append("text")
+            .attr("dx", 12)
+            .attr("dy", ".35em")
+            .text(d => d.name);
+
+        simulation
+            .nodes(data.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(data.links);
+
+        simulation.alpha(1).restart();
+    }
+
+    function ticked() {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+    }
+
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+
+    function clearMindMap() {
+        if (svg) {
+            svg.selectAll("*").remove();
+        }
+    }
+
+    initMindMap();
 });
