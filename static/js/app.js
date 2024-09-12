@@ -3,14 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialIdea = document.getElementById('initial-idea');
     const generateBtn = document.getElementById('generate-btn');
     const pauseBtn = document.getElementById('pause-btn');
+    const newSessionBtn = document.getElementById('new-session-btn');
     const titlesOutput = document.getElementById('titles-output');
     const ideasOutput = document.getElementById('ideas-output');
 
     let isGenerating = false;
     let feedback = [];
+    let currentSessionId = null;
 
     generateBtn.addEventListener('click', startGeneration);
     pauseBtn.addEventListener('click', pauseGeneration);
+    newSessionBtn.addEventListener('click', startNewSession);
 
     function startGeneration() {
         isGenerating = true;
@@ -25,6 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.style.display = 'none';
     }
 
+    function startNewSession() {
+        currentSessionId = null;
+        feedback = [];
+        titlesOutput.innerHTML = '';
+        ideasOutput.innerHTML = '';
+        initialTitle.value = '';
+        initialIdea.value = '';
+        pauseGeneration();
+    }
+
     async function generateContent() {
         while (isGenerating) {
             try {
@@ -36,15 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         initial_title: initialTitle.value,
                         initial_idea: initialIdea.value,
-                        feedback: feedback
+                        feedback: feedback,
+                        session_id: currentSessionId
                     }),
                 });
+
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
+                currentSessionId = data.session_id;
                 displayContent(data);
             } catch (error) {
                 console.error('Error generating content:', error);
@@ -53,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pauseGeneration();
             }
 
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before next generation
+            await new Promise(resolve => setTimeout(resolve, 5000));
         }
     }
 

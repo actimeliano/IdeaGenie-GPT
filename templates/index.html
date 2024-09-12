@@ -9,11 +9,22 @@
 <body>
     <div class="container">
         <h1>AI-Powered Idea Generator</h1>
+        <div class="user-actions">
+            {% if current_user.is_authenticated %}
+                <span>Welcome, {{ current_user.username }}!</span>
+                <a href="{{ url_for('my_sessions') }}">My Sessions</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
         <div class="input-section">
             <input type="text" id="initial-title" placeholder="Enter initial title">
             <input type="text" id="initial-idea" placeholder="Enter initial idea">
             <button id="generate-btn">Generate</button>
             <button id="pause-btn" style="display: none;">Pause</button>
+            <button id="new-session-btn">New Session</button>
         </div>
         <div class="output-section">
             <div class="column">

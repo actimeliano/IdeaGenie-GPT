@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Idea Sessions - AI-Powered Idea Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>My Idea Sessions</h1>
+        {% if sessions %}
+            <ul>
+                {% for session in sessions %}
+                    <li>
+                        <h3>Session {{ session.id }}</h3>
+                        <p>Initial Title: {{ session.initial_title }}</p>
+                        <p>Initial Idea: {{ session.initial_idea }}</p>
+                        <p>Created at: {{ session.created_at }}</p>
+                        <h4>Generated Ideas:</h4>
+                        <ul>
+                            {% for idea in session.generated_ideas %}
+                                <li class="{{ idea.category }}">
+                                    <strong>{{ idea.type|capitalize }}:</strong> {{ idea.content }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't created any idea sessions yet.</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}">Generate New Ideas</a>
+    </div>
+</body>
+</html>
